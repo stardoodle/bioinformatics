@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Membrane Architect | Bio-World</title>
+    <title>Membrane Architect | Bio-World Responsive</title>
     <style>
         @import url('https://googleapis.com');
 
@@ -30,8 +30,9 @@
             background: var(--bg);
             color: var(--dark);
             margin: 0;
-            height: 100vh;
             display: flex;
+            flex-direction: row; /* Desktop Default */
+            height: 100vh;
             overflow: hidden;
         }
 
@@ -39,12 +40,13 @@
         .sidebar {
             width: 320px;
             background: white;
-            padding: 25px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 15px;
             z-index: 100;
             box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            overflow-y: auto;
         }
 
         .manual { border-right: 4px solid var(--dark); }
@@ -52,7 +54,7 @@
 
         h2, h3 { 
             font-family: 'Fredoka One', cursive; 
-            font-size: 1.6rem; 
+            font-size: 1.5rem; 
             text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
             margin: 0;
         }
@@ -60,7 +62,7 @@
         .step-box {
             background: #f1f5f9;
             border: 3px solid var(--dark);
-            padding: 15px;
+            padding: 12px;
             border-radius: 20px;
             font-size: 0.85rem;
             line-height: 1.4;
@@ -76,13 +78,14 @@
             flex-direction: column;
             background-image: radial-gradient(var(--yellow) 1px, transparent 1px);
             background-size: 30px 30px;
+            min-height: 400px;
         }
 
         .stat-bar {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
+            top: 15px;
+            left: 15px;
+            right: 15px;
             display: flex;
             justify-content: space-between;
             pointer-events: none;
@@ -91,12 +94,12 @@
 
         .stat { 
             background: white; 
-            padding: 10px 25px; 
+            padding: 8px 15px; 
             border: 3px solid var(--dark);
             border-radius: 50px; 
-            box-shadow: 4px 4px 0px var(--dark);
+            box-shadow: 3px 3px 0px var(--dark);
             font-family: 'Fredoka One', cursive;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
 
         .zone {
@@ -106,28 +109,28 @@
             justify-content: center;
             transition: all 0.3s ease;
             font-family: 'Fredoka One', cursive;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             opacity: 0.6;
         }
 
         .water { background: var(--blue); color: white; text-shadow: 2px 2px 0 var(--dark); }
         .lipid { 
-            flex: 1.5; 
+            flex: 1.3; 
             background: var(--yellow); 
             color: var(--dark);
-            border-top: 6px dashed var(--dark);
-            border-bottom: 6px dashed var(--dark);
+            border-top: 5px dashed var(--dark);
+            border-bottom: 5px dashed var(--dark);
         }
 
         .zone.active { opacity: 1; background: white !important; color: var(--dark); }
 
         #node {
             position: absolute;
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             background: white;
             border: 4px solid var(--dark);
-            border-radius: 30px;
+            border-radius: 25px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -136,12 +139,41 @@
             z-index: 100;
             cursor: grab;
             touch-action: none;
-            left: calc(50% - 60px);
-            top: calc(50% - 60px);
+            left: calc(50% - 50px);
+            top: calc(50% - 50px);
         }
 
-        .node-name { font-family: 'Fredoka One', cursive; font-size: 1.8rem; color: var(--pink); }
-        .node-prop { font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; }
+        .node-name { font-family: 'Fredoka One', cursive; font-size: 1.5rem; color: var(--pink); }
+        .node-prop { font-size: 0.6rem; font-weight: 800; color: #64748b; text-transform: uppercase; }
+
+        /* Mobile Breakpoints */
+        @media (max-width: 1100px) {
+            body {
+                flex-direction: column;
+                overflow-y: auto;
+                height: auto;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                border: none;
+                box-shadow: none;
+            }
+            .manual { border-bottom: 4px solid var(--dark); }
+            .concept { border-top: 4px solid var(--dark); }
+            .game-view {
+                height: 500px;
+                border-top: 4px solid var(--dark);
+                border-bottom: 4px solid var(--dark);
+            }
+        }
+
+        @media (max-width: 480px) {
+            h2, h3 { font-size: 1.2rem; }
+            .node-name { font-size: 1.2rem; }
+            #node { width: 80px; height: 80px; }
+            .stat { font-size: 0.7rem; }
+        }
 
         #modal {
             position: fixed; inset: 0; background: rgba(0,0,0,0.8);
@@ -149,7 +181,7 @@
         }
         .modal-card { 
             background: white; padding: 30px; border: 5px solid var(--dark);
-            border-radius: 30px; text-align: center; max-width: 400px;
+            border-radius: 30px; text-align: center; width: 90%; max-width: 400px;
             box-shadow: 8px 8px 0px var(--green);
         }
         
@@ -167,23 +199,20 @@
     <div class="sidebar manual">
         <h2 style="color:var(--orange)">HOW TO PLAY</h2>
         <div class="step-box">
-            <b>The Mission:</b> Drag 10 Amino Acids into their correct home.
+            <b>1. Drag:</b> Move the Amino Acid card up or down.
         </div>
         <div class="step-box">
-            <b>Water:</b> Use for <b style="color:var(--blue)">Hydrophilic</b> (polar/charged) parts.
+            <b>2. Water:</b> Match <b style="color:var(--blue)">Hydrophilic</b> (Polar) residues here.
         </div>
         <div class="step-box">
-            <b>Lipid:</b> Use for <b style="color:var(--orange)">Hydrophobic</b> (oily) parts.
-        </div>
-        <div class="step-box" style="background:var(--pink); color:white;">
-            <b>Stability:</b> Wrong choices hurt the protein! Don't hit 0%.
+            <b>3. Lipid:</b> Match <b style="color:var(--orange)">Hydrophobic</b> (Oily) residues to the center.
         </div>
     </div>
 
     <!-- CENTER: GAME AREA -->
-    <div class="game-view">
+    <div class="game-view" id="game-container">
         <div class="stat-bar">
-            <div class="stat">💪 Health: <span id="stab">100</span>%</div>
+            <div class="stat">💪 Stability: <span id="stab">100</span>%</div>
             <div class="stat">🧬 <span id="prog">1</span>/10</div>
         </div>
 
@@ -201,24 +230,20 @@
     <div class="sidebar concept">
         <h2 style="color:var(--blue)">THE SCIENCE</h2>
         <div class="step-box" style="background:var(--bg)">
-            <b>Membrane Folding</b><br>
-            Membrane proteins fold differently because the bilayer is a "fatty" environment.
+            <h3 style="font-size:0.8rem; color:var(--blue)">UNIT IV</h3>
+            <b>Membrane Proteins</b> fold into the lipid bilayer using the <b>Hydrophobic Effect</b>.
         </div>
         <div class="step-box">
-            <h3 style="font-size:0.8rem; color:var(--pink)">HYDROPHOBICITY</h3>
-            Non-polar residues (Leu, Ile) stay inside the membrane to hide from water. This is the <b>Hydrophobic Effect</b>.
-        </div>
-        <div class="step-box" style="background:#f0fdf4">
-            <h3 style="font-size:0.8rem; color:var(--green)">STRUCTURE PREDICTION</h3>
-            We use <b>Hydropathy Plots</b> to predict which parts of a protein sequence will sit inside the lipid layer.
+            Non-polar residues (Leu, Val) "hide" inside the membrane to avoid water!
         </div>
     </div>
 
+    <!-- RESULT MODAL -->
     <div id="modal" class="modal">
         <div class="modal-card">
             <h1 id="m-title" style="font-family:'Fredoka One'">Result</h1>
             <p id="m-text" style="font-weight:700; color:#475569;"></p>
-            <button onclick="location.reload()">RESTART ↻</button>
+            <button onclick="location.reload()">TRY AGAIN ↻</button>
         </div>
     </div>
 
@@ -237,7 +262,10 @@
         ];
 
         let idx = 0, health = 100, dragging = false, startPos = { x: 0, y: 0 };
-        const node = document.getElementById('node'), lipidZone = document.getElementById('z-lipid'), scoreEl = document.getElementById('stab');
+        const node = document.getElementById('node');
+        const lipidZone = document.getElementById('z-lipid');
+        const scoreEl = document.getElementById('stab');
+        const gameContainer = document.getElementById('game-container');
         
         const handleStart = (e) => {
             dragging = true;
@@ -250,10 +278,18 @@
 
         const handleMove = (e) => {
             if (!dragging) return;
+            // Prevent scrolling on mobile while dragging
+            if (e.cancelable) e.preventDefault();
+            
             const cy = e.touches ? e.touches[0].clientY : e.clientY;
             const cx = e.touches ? e.touches[0].clientX : e.clientX;
-            node.style.left = `${cx - startPos.x}px`;
-            node.style.top = `${cy - startPos.y}px`;
+            const containerRect = gameContainer.getBoundingClientRect();
+            
+            let newX = cx - containerRect.left - startPos.x;
+            let newY = cy - containerRect.top - startPos.y;
+
+            node.style.left = `${newX}px`;
+            node.style.top = `${newY}px`;
 
             const lRect = lipidZone.getBoundingClientRect();
             if (cy > lRect.top && cy < lRect.bottom) lipidZone.classList.add('active');
@@ -270,8 +306,12 @@
         };
 
         function validate(choice) {
-            if (choice !== aminos[idx].t) { health -= 20; triggerFlash('#f87171'); }
-            else triggerFlash('var(--green)');
+            if (choice !== aminos[idx].t) { 
+                health -= 20; 
+                triggerFlash('#f87171'); 
+            } else { 
+                triggerFlash('var(--green)'); 
+            }
             
             scoreEl.innerText = Math.max(0, health);
             node.style.transition = '0.4s cubic-bezier(0.4, 0, 0.2, 1)';
@@ -284,32 +324,34 @@
                     document.getElementById('aa-name').innerText = aminos[idx].n;
                     document.getElementById('aa-desc').innerText = aminos[idx].d;
                     document.getElementById('prog').innerText = idx + 1;
-                    node.style.left = 'calc(50% - 60px)';
-                    node.style.top = 'calc(50% - 60px)';
+                    node.style.left = 'calc(50% - 50px)';
+                    node.style.top = 'calc(50% - 50px)';
                     node.style.transform = 'scale(1)';
                     node.style.opacity = '1';
-                } else showEnd();
+                } else {
+                    showEnd();
+                }
             }, 400);
         }
 
         function triggerFlash(color) {
-            document.body.style.background = color;
-            setTimeout(() => document.body.style.background = 'var(--bg)', 150);
+            gameContainer.style.background = color;
+            setTimeout(() => gameContainer.style.background = '', 150);
         }
 
         function showEnd() {
             const m = document.getElementById('modal');
             document.getElementById('m-title').innerText = health > 0 ? "SUCCESS! 🎉" : "FAILED! 😵";
             document.getElementById('m-text').innerText = health > 0 
-                ? "The protein folded correctly into the membrane!" 
-                : "The protein aggregated due to misfolding.";
+                ? "The protein folded perfectly into the lipid bilayer!" 
+                : "The protein misfolded and became unstable.";
             m.style.display = 'flex';
         }
 
         node.addEventListener('mousedown', handleStart);
-        node.addEventListener('touchstart', handleStart);
-        window.addEventListener('mousemove', handleMove);
-        window.addEventListener('touchmove', handleMove);
+        node.addEventListener('touchstart', handleStart, {passive: false});
+        window.addEventListener('mousemove', handleMove, {passive: false});
+        window.addEventListener('touchmove', handleMove, {passive: false});
         window.addEventListener('mouseup', handleEnd);
         window.addEventListener('touchend', handleEnd);
     </script>
