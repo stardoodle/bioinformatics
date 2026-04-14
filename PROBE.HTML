@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Propensity Pop | Bio-World</title>
+    <title>Propensity Pop | Bio-World Responsive</title>
     <style>
         @import url('https://googleapis.com');
 
@@ -19,27 +19,29 @@
             --breaker: #334155;
         }
 
-        * { box-sizing: border-box; user-select: none; margin: 0; }
+        * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
         
         body { 
             font-family: 'Quicksand', sans-serif; 
             background: var(--bg); 
             color: var(--dark); 
-            height: 100vh; 
+            min-height: 100vh; 
             display: flex; 
-            overflow: hidden; 
+            flex-direction: row; /* Desktop default */
+            overflow-x: hidden;
         }
 
-        /* Sidebars Style */
+        /* Responsive Sidebar Logic */
         .sidebar { 
             width: 300px; 
             background: white; 
-            padding: 25px; 
+            padding: 20px; 
             display: flex; 
             flex-direction: column; 
             gap: 15px; 
             z-index: 100;
             box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            flex-shrink: 0;
         }
 
         .manual { border-right: 4px solid var(--dark); }
@@ -47,15 +49,14 @@
 
         .h-title { 
             font-family: 'Fredoka One', cursive; 
-            font-size: 1.6rem; 
+            font-size: 1.5rem; 
             color: var(--pink); 
             text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
-            margin-bottom: 5px; 
         }
         
         .info-card { 
             background: #f1f5f9; 
-            padding: 15px; 
+            padding: 12px; 
             border-radius: 20px; 
             border: 3px solid var(--dark); 
             box-shadow: 4px 4px 0px var(--dark);
@@ -66,13 +67,19 @@
             font-size: 0.8rem; 
             color: var(--blue); 
             text-transform: uppercase; 
-            margin-bottom: 8px; 
+            margin-bottom: 5px; 
         }
 
         .step { font-size: 0.8rem; line-height: 1.4; color: #475569; font-weight: 700; }
 
         /* Game Area */
-        .stage { flex: 1; position: relative; display: flex; flex-direction: column; }
+        .stage { 
+            flex: 1; 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 500px; /* Ensures game is playable on mobile */
+        }
         
         #workspace { 
             flex: 1; 
@@ -80,38 +87,62 @@
             overflow: hidden; 
             background-image: radial-gradient(var(--blue) 1px, transparent 1px);
             background-size: 40px 40px;
+            background-color: white;
         }
 
         .aa-node {
-            position: absolute; width: 65px; height: 65px; border-radius: 50%;
+            position: absolute; width: 60px; height: 60px; border-radius: 50%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-family: 'Fredoka One', cursive; font-size: 1.1rem; color: white; cursor: grab;
+            font-family: 'Fredoka One', cursive; font-size: 1rem; color: white; cursor: grab;
             border: 3px solid var(--dark); box-shadow: 5px 5px 0px var(--dark);
             z-index: 50; touch-action: none;
         }
 
-        .bin-area { height: 160px; display: flex; gap: 10px; padding: 15px; background: white; border-top: 4px solid var(--dark); }
+        .bin-area { 
+            height: 140px; 
+            display: flex; 
+            gap: 8px; 
+            padding: 10px; 
+            background: white; 
+            border-top: 4px solid var(--dark); 
+        }
         
         .bin {
-            flex: 1; border-radius: 20px; display: flex; align-items: center; justify-content: center; 
-            text-align: center; font-family: 'Fredoka One', cursive; font-size: 0.9rem;
-            color: var(--dark); transition: 0.2s; border: 4px solid var(--dark); box-shadow: 4px 4px 0px var(--dark);
+            flex: 1; border-radius: 15px; display: flex; align-items: center; justify-content: center; 
+            text-align: center; font-family: 'Fredoka One', cursive; font-size: 0.8rem;
+            color: var(--dark); transition: 0.2s; border: 3px solid var(--dark); box-shadow: 3px 3px 0px var(--dark);
         }
         .bin-helix { background: var(--helix); color: white; }
         .bin-sheet { background: var(--sheet); color: white; }
         .bin-breaker { background: var(--yellow); }
-        .bin.hover { transform: translateY(-8px); }
+        .bin.hover { transform: translateY(-5px); box-shadow: 5px 5px 0px var(--dark); }
 
         .stat-card { 
-            background: var(--blue); color: white; padding: 15px; border: 4px solid var(--dark);
-            border-radius: 20px; text-align: center; margin-top: auto; box-shadow: 5px 5px 0px var(--dark);
+            background: var(--blue); color: white; padding: 12px; border: 3px solid var(--dark);
+            border-radius: 20px; text-align: center; margin-top: auto; box-shadow: 4px 4px 0px var(--dark);
         }
 
-        .streak-meter { margin-top: 8px; height: 12px; background: rgba(0,0,0,0.2); border: 2px solid var(--dark); border-radius: 10px; overflow: hidden; }
+        .streak-meter { margin-top: 8px; height: 10px; background: rgba(0,0,0,0.2); border: 2px solid var(--dark); border-radius: 10px; overflow: hidden; }
         #streak-bar { width: 0%; height: 100%; background: var(--green); transition: 0.3s; }
 
+        /* Media Queries for Mobile/Phone */
+        @media (max-width: 1100px) {
+            body { flex-direction: column; overflow-y: auto; height: auto; }
+            .sidebar { width: 100%; height: auto; border: none; box-shadow: none; }
+            .manual { border-bottom: 4px solid var(--dark); }
+            .concept-panel { border-top: 4px solid var(--dark); }
+            .stage { height: 60vh; min-height: 450px; border-bottom: 4px solid var(--dark); }
+        }
+
+        @media (max-width: 480px) {
+            .h-title { font-size: 1.2rem; }
+            .aa-node { width: 50px; height: 50px; font-size: 0.8rem; }
+            .bin-area { height: 100px; }
+            .bin { font-size: 0.7rem; }
+        }
+
         .flash { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: 0.1s; z-index: 1000; }
-        #bonus-popup { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); font-family: 'Fredoka One', cursive; font-size: 3rem; color: var(--yellow); opacity: 0; text-shadow: 4px 4px 0px var(--dark); z-index: 200; pointer-events: none;}
+        #bonus-popup { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); font-family: 'Fredoka One', cursive; font-size: 3rem; color: var(--yellow); opacity: 0; text-shadow: 4px 4px 0px var(--dark); z-index: 200; pointer-events: none; transition: 0.3s;}
     </style>
 </head>
 <body>
@@ -121,16 +152,16 @@
         <h1 class="h-title">PROPENSITY POP</h1>
         <div class="info-card">
             <h3>How to Play</h3>
-            <div class="step">1. <b>GRAB:</b> Drag falling Amino Acids.</div>
-            <div class="step">2. <b>SORT:</b> Drop them in the right bins!<br>
+            <div class="step">1. <b>GRAB:</b> Drag Amino Acids.</div>
+            <div class="step">2. <b>SORT:</b> Match bins:<br>
                 • <b style="color:var(--helix)">HELIX:</b> A, L, M, E<br>
                 • <b style="color:var(--sheet)">SHEET:</b> V, I, F, Y<br>
                 • <b style="color:var(--dark)">FLUSH:</b> P, G
             </div>
-            <div class="step">3. <b>STREAK:</b> Match 5 in a row for a Score Burst! ⭐</div>
+            <div class="step">3. <b>STREAK:</b> Match 5 for Bonus! ⭐</div>
         </div>
         <div class="stat-card">
-            <div id="score" style="font-family: 'Fredoka One'; font-size: 2rem;">0</div>
+            <div id="score" style="font-family: 'Fredoka One'; font-size: 1.8rem;">0</div>
             <div style="font-size: 0.6rem; font-weight: 800;">STREAK PROGRESS</div>
             <div class="streak-meter"><div id="streak-bar"></div></div>
         </div>
@@ -153,20 +184,22 @@
     <div class="sidebar concept-panel">
         <h1 class="h-title" style="color:var(--blue)">THE SCIENCE</h1>
         <div class="info-card" style="background:var(--bg)">
-            <div class="step"><b>Amino Acid Propensity</b><br>Prediction algorithms look for "Helix Lovers" and "Sheet Lovers" based on their side-chain chemistry.</div>
+            <div class="step"><b>Propensity (Unit II)</b><br>Amino acids prefer shapes based on their side-chain chemistry.</div>
         </div>
         <div class="info-card">
-            <h3>PREDICTION RULES</h3>
-            <div class="step">We use <b>Propensity Scales</b> (like Chou-Fasman). For example, <b>Alanine (A)</b> is the king of Helices because its side chain is small and fits perfectly!</div>
-        </div>
-        <div class="info-card" style="background:#f0fdf4">
             <h3>HELIX BREAKERS</h3>
-            <div class="step"><b>Proline (P)</b> is a "Breaker" because its ring structure creates a kink that snaps the helix. That's why you <b>Flush</b> them!</div>
+            <div class="step"><b>Proline (P)</b> snaps helices because of its rigid ring. That's why you <b>Flush</b> them!</div>
         </div>
     </div>
 
     <script>
-        const workspace = document.getElementById('workspace'), scoreEl = document.getElementById('score'), streakBar = document.getElementById('streak-bar'), bonusPopup = document.getElementById('bonus-popup'), flash = document.getElementById('flash'), bins = document.querySelectorAll('.bin');
+        const workspace = document.getElementById('workspace'), 
+              scoreEl = document.getElementById('score'), 
+              streakBar = document.getElementById('streak-bar'), 
+              bonusPopup = document.getElementById('bonus-popup'), 
+              flash = document.getElementById('flash'), 
+              bins = document.querySelectorAll('.bin');
+
         const aminoAcids = [
             { n: 'ALA', t: 'helix', c: 'var(--helix)' }, { n: 'LEU', t: 'helix', c: 'var(--helix)' },
             { n: 'VAL', t: 'sheet', c: 'var(--sheet)' }, { n: 'ILE', t: 'sheet', c: 'var(--sheet)' },
@@ -175,7 +208,7 @@
             { n: 'GLU', t: 'helix', c: 'var(--helix)' }, { n: 'TYR', t: 'sheet', c: 'var(--sheet)' }
         ];
 
-        let score = 0, streakCount = 0, lastType = null, fallSpeed = 2.5, spawnRate = 1800;
+        let score = 0, streakCount = 0, lastType = null, fallSpeed = 2, spawnRate = 2000;
 
         function createNode() {
             const data = aminoAcids[Math.floor(Math.random() * aminoAcids.length)];
@@ -192,18 +225,23 @@
                 if (!dragging) {
                     pos += fallSpeed;
                     node.style.top = pos + 'px';
-                    if (pos > workspace.clientHeight) { clearInterval(fall); node.remove(); resetStreak(); }
+                    if (pos > workspace.clientHeight) { 
+                        clearInterval(fall); 
+                        node.remove(); 
+                        streakCount = 0; 
+                        updateUI(); 
+                    }
                 }
             }, 20);
 
-            const startDrag = (e) => {
+            const handleDrag = (e) => {
                 dragging = true;
                 const move = (me) => {
                     const cx = me.touches ? me.touches[0].clientX : me.clientX;
                     const cy = me.touches ? me.touches[0].clientY : me.clientY;
                     const rect = workspace.getBoundingClientRect();
-                    node.style.left = (cx - rect.left - 32) + 'px';
-                    node.style.top = (cy - rect.top - 32) + 'px';
+                    node.style.left = (cx - rect.left - 30) + 'px';
+                    node.style.top = (cy - rect.top - 30) + 'px';
                     bins.forEach(bin => {
                         const bRect = bin.getBoundingClientRect();
                         if (cx > bRect.left && cx < bRect.right && cy > bRect.top && cy < bRect.bottom) bin.classList.add('hover'); else bin.classList.remove('hover');
@@ -225,10 +263,10 @@
                     window.removeEventListener('touchmove', move); window.removeEventListener('touchend', end);
                 };
                 window.addEventListener('mousemove', move); window.addEventListener('mouseup', end);
-                window.addEventListener('touchmove', move, {passive:false}); window.addEventListener('touchend', end);
+                window.addEventListener('touchmove', move, {passive: false}); window.addEventListener('touchend', end);
             };
-            node.addEventListener('mousedown', startDrag);
-            node.addEventListener('touchstart', startDrag, {passive:false});
+            node.addEventListener('mousedown', handleDrag);
+            node.addEventListener('touchstart', handleDrag, {passive: false});
         }
 
         function handleLogic(binType, aaType) {
@@ -238,17 +276,36 @@
                 let gain = 100;
                 if (streakCount >= 5) { gain = 1000; triggerBonus(); streakCount = 0; }
                 score += gain; triggerFlash('var(--green)');
-            } else { score = Math.max(0, score - 150); resetStreak(); triggerFlash('#f87171'); }
+            } else { 
+                score = Math.max(0, score - 150); 
+                streakCount = 0; 
+                triggerFlash('#f87171'); 
+            }
             updateUI();
         }
 
-        function resetStreak() { streakCount = 0; lastType = null; updateUI(); }
-        function updateUI() { scoreEl.innerText = score; streakBar.style.width = (streakCount / 5 * 100) + "%"; }
-        function triggerFlash(c) { flash.style.background = c; flash.style.opacity = 0.3; setTimeout(() => flash.style.opacity = 0, 150); }
-        function triggerBonus() { bonusPopup.style.opacity = 1; setTimeout(() => bonusPopup.style.opacity = 0, 800); }
+        function updateUI() { 
+            scoreEl.innerText = score; 
+            streakBar.style.width = (streakCount / 5 * 100) + "%"; 
+        }
 
-        setInterval(createNode, spawnRate);
-        setInterval(() => { fallSpeed += 0.1; spawnRate = Math.max(500, spawnRate - 50); }, 5000);
+        function triggerFlash(c) { 
+            flash.style.background = c; flash.style.opacity = 0.3; 
+            setTimeout(() => flash.style.opacity = 0, 150); 
+        }
+
+        function triggerBonus() { 
+            bonusPopup.style.opacity = 1; 
+            setTimeout(() => bonusPopup.style.opacity = 0, 800); 
+        }
+
+        let spawner = setInterval(createNode, spawnRate);
+        setInterval(() => { 
+            fallSpeed += 0.2; 
+            spawnRate = Math.max(600, spawnRate - 100); 
+            clearInterval(spawner);
+            spawner = setInterval(createNode, spawnRate);
+        }, 10000);
     </script>
 </body>
 </html>
