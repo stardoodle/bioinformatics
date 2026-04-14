@@ -8,45 +8,36 @@
         @import url('https://googleapis.com');
 
         :root {
-            --yellow: #facc15;
-            --pink: #f472b6;
-            --blue: #38bdf8;
-            --green: #4ade80;
-            --orange: #fb923c;
-            --dark: #000000;
+            --yellow: #facc15; --pink: #f472b6; --blue: #38bdf8;
+            --green: #4ade80; --orange: #fb923c; --dark: #000000;
             --bg: #fffce8;
         }
 
-        /* UX: Prevent text selection and blue highlights during drag */
-        * { 
-            box-sizing: border-box; 
-            user-select: none; 
-            -webkit-user-select: none; 
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { box-sizing: border-box; user-select: none; -webkit-user-select: none; }
+        
         body {
             font-family: 'Quicksand', sans-serif;
             background: var(--bg);
             color: var(--dark);
             margin: 0;
             display: flex;
-            flex-direction: row; /* Desktop Default */
+            flex-direction: row;
             height: 100vh;
             overflow: hidden;
         }
 
-        /* Sidebars Style */
+        /* Shared Sidebars Style */
         .sidebar {
             width: 320px;
             background: white;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
             z-index: 100;
             box-shadow: 0 0 15px rgba(0,0,0,0.05);
             overflow-y: auto;
+            flex-shrink: 0;
         }
 
         .manual { border-right: 4px solid var(--dark); }
@@ -63,7 +54,7 @@
             background: #f1f5f9;
             border: 3px solid var(--dark);
             padding: 12px;
-            border-radius: 20px;
+            border-radius: 18px;
             font-size: 0.85rem;
             line-height: 1.4;
             box-shadow: 4px 4px 0px var(--dark);
@@ -107,27 +98,26 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            transition: 0.3s;
             font-family: 'Fredoka One', cursive;
             font-size: 1.2rem;
             opacity: 0.6;
         }
 
-        .water { background: var(--blue); color: white; text-shadow: 2px 2px 0 var(--dark); }
+        .water { background: var(--blue); color: white; }
         .lipid { 
             flex: 1.3; 
             background: var(--yellow); 
-            color: var(--dark);
             border-top: 5px dashed var(--dark);
             border-bottom: 5px dashed var(--dark);
         }
 
         .zone.active { opacity: 1; background: white !important; color: var(--dark); }
 
+        /* Draggable Card */
         #node {
             position: absolute;
-            width: 100px;
-            height: 100px;
+            width: 100px; height: 100px;
             background: white;
             border: 4px solid var(--dark);
             border-radius: 25px;
@@ -146,33 +136,13 @@
         .node-name { font-family: 'Fredoka One', cursive; font-size: 1.5rem; color: var(--pink); }
         .node-prop { font-size: 0.6rem; font-weight: 800; color: #64748b; text-transform: uppercase; }
 
-        /* Mobile Breakpoints */
-        @media (max-width: 1100px) {
-            body {
-                flex-direction: column;
-                overflow-y: auto;
-                height: auto;
-            }
-            .sidebar {
-                width: 100%;
-                height: auto;
-                border: none;
-                box-shadow: none;
-            }
+        /* Mobile Adjustments */
+        @media (max-width: 1024px) {
+            body { flex-direction: column; overflow-y: auto; height: auto; }
+            .sidebar { width: 100%; height: auto; border: none; box-shadow: none; }
             .manual { border-bottom: 4px solid var(--dark); }
             .concept { border-top: 4px solid var(--dark); }
-            .game-view {
-                height: 500px;
-                border-top: 4px solid var(--dark);
-                border-bottom: 4px solid var(--dark);
-            }
-        }
-
-        @media (max-width: 480px) {
-            h2, h3 { font-size: 1.2rem; }
-            .node-name { font-size: 1.2rem; }
-            #node { width: 80px; height: 80px; }
-            .stat { font-size: 0.7rem; }
+            .game-view { height: 500px; border-bottom: 4px solid var(--dark); }
         }
 
         #modal {
@@ -195,55 +165,44 @@
 </head>
 <body>
 
-    <!-- LEFT: MANUAL -->
+    <!-- LEFT SIDEBAR -->
     <div class="sidebar manual">
         <h2 style="color:var(--orange)">HOW TO PLAY</h2>
-        <div class="step-box">
-            <b>1. Drag:</b> Move the Amino Acid card up or down.
-        </div>
-        <div class="step-box">
-            <b>2. Water:</b> Match <b style="color:var(--blue)">Hydrophilic</b> (Polar) residues here.
-        </div>
-        <div class="step-box">
-            <b>3. Lipid:</b> Match <b style="color:var(--orange)">Hydrophobic</b> (Oily) residues to the center.
-        </div>
+        <div class="step-box"><b>Goal:</b> Drag the card into the correct zone.</div>
+        <div class="step-box"><b>Water:</b> For <b style="color:var(--blue)">Charged/Polar</b>.</div>
+        <div class="step-box"><b>Lipid:</b> For <b style="color:var(--orange)">Hydrophobic</b>.</div>
     </div>
 
-    <!-- CENTER: GAME AREA -->
-    <div class="game-view" id="game-container">
+    <!-- GAME CENTER -->
+    <div class="game-view" id="game-view">
         <div class="stat-bar">
-            <div class="stat">💪 Stability: <span id="stab">100</span>%</div>
+            <div class="stat">💪 HP: <span id="stab">100</span>%</div>
             <div class="stat">🧬 <span id="prog">1</span>/10</div>
         </div>
 
-        <div class="zone water" id="z-water-top">CYTOPLASM</div>
-        <div class="zone lipid" id="z-lipid">MEMBRANE</div>
-        <div class="zone water" id="z-water-bot">CYTOPLASM</div>
+        <div class="zone water">CYTOPLASM</div>
+        <div class="zone lipid" id="z-lipid">MEMBRANE CORE</div>
+        <div class="zone water">CYTOPLASM</div>
 
         <div id="node">
-            <div class="node-name" id="aa-name">LEU</div>
-            <div class="node-prop" id="aa-desc">HYDROPHOBIC</div>
+            <div class="node-name" id="aa-name">---</div>
+            <div class="node-prop" id="aa-desc">---</div>
         </div>
     </div>
 
-    <!-- RIGHT: CONCEPT -->
+    <!-- RIGHT SIDEBAR -->
     <div class="sidebar concept">
         <h2 style="color:var(--blue)">THE SCIENCE</h2>
         <div class="step-box" style="background:var(--bg)">
-            <h3 style="font-size:0.8rem; color:var(--blue)">UNIT IV</h3>
-            <b>Membrane Proteins</b> fold into the lipid bilayer using the <b>Hydrophobic Effect</b>.
-        </div>
-        <div class="step-box">
-            Non-polar residues (Leu, Val) "hide" inside the membrane to avoid water!
+            <b>UNIT IV: Membrane Proteins</b> sit in a fatty lipid bilayer. We use <b>Hydropathy Plots</b> to predict them!
         </div>
     </div>
 
-    <!-- RESULT MODAL -->
     <div id="modal" class="modal">
         <div class="modal-card">
             <h1 id="m-title" style="font-family:'Fredoka One'">Result</h1>
             <p id="m-text" style="font-weight:700; color:#475569;"></p>
-            <button onclick="location.reload()">TRY AGAIN ↻</button>
+            <button onclick="location.reload()">PLAY AGAIN ↻</button>
         </div>
     </div>
 
@@ -261,12 +220,21 @@
             { n: 'GLN', d: 'POLAR', t: 'water' }
         ];
 
+        // NEW: SHUFFLE ENGINE
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
         let idx = 0, health = 100, dragging = false, startPos = { x: 0, y: 0 };
-        const node = document.getElementById('node');
-        const lipidZone = document.getElementById('z-lipid');
-        const scoreEl = document.getElementById('stab');
-        const gameContainer = document.getElementById('game-container');
-        
+        const node = document.getElementById('node'), lipidZone = document.getElementById('z-lipid'), scoreEl = document.getElementById('stab'), gameView = document.getElementById('game-view');
+
+        // Start randomized
+        shuffle(aminos);
+        updateNode();
+
         const handleStart = (e) => {
             dragging = true;
             const cy = e.touches ? e.touches[0].clientY : e.clientY;
@@ -278,18 +246,13 @@
 
         const handleMove = (e) => {
             if (!dragging) return;
-            // Prevent scrolling on mobile while dragging
             if (e.cancelable) e.preventDefault();
-            
             const cy = e.touches ? e.touches[0].clientY : e.clientY;
             const cx = e.touches ? e.touches[0].clientX : e.clientX;
-            const containerRect = gameContainer.getBoundingClientRect();
+            const gRect = gameView.getBoundingClientRect();
             
-            let newX = cx - containerRect.left - startPos.x;
-            let newY = cy - containerRect.top - startPos.y;
-
-            node.style.left = `${newX}px`;
-            node.style.top = `${newY}px`;
+            node.style.left = `${cx - gRect.left - startPos.x}px`;
+            node.style.top = `${cy - gRect.top - startPos.y}px`;
 
             const lRect = lipidZone.getBoundingClientRect();
             if (cy > lRect.top && cy < lRect.bottom) lipidZone.classList.add('active');
@@ -306,52 +269,46 @@
         };
 
         function validate(choice) {
-            if (choice !== aminos[idx].t) { 
-                health -= 20; 
-                triggerFlash('#f87171'); 
-            } else { 
-                triggerFlash('var(--green)'); 
-            }
+            if (choice !== aminos[idx].t) { health -= 20; flash('#f87171'); }
+            else flash('var(--green)');
             
             scoreEl.innerText = Math.max(0, health);
             node.style.transition = '0.4s cubic-bezier(0.4, 0, 0.2, 1)';
             node.style.transform = 'scale(0)';
-            node.style.opacity = '0';
 
             setTimeout(() => {
                 idx++;
                 if (idx < aminos.length && health > 0) {
-                    document.getElementById('aa-name').innerText = aminos[idx].n;
-                    document.getElementById('aa-desc').innerText = aminos[idx].d;
-                    document.getElementById('prog').innerText = idx + 1;
+                    updateNode();
                     node.style.left = 'calc(50% - 50px)';
                     node.style.top = 'calc(50% - 50px)';
                     node.style.transform = 'scale(1)';
-                    node.style.opacity = '1';
-                } else {
-                    showEnd();
-                }
+                } else showEnd();
             }, 400);
         }
 
-        function triggerFlash(color) {
-            gameContainer.style.background = color;
-            setTimeout(() => gameContainer.style.background = '', 150);
+        function updateNode() {
+            document.getElementById('aa-name').innerText = aminos[idx].n;
+            document.getElementById('aa-desc').innerText = aminos[idx].d;
+            document.getElementById('prog').innerText = idx + 1;
+        }
+
+        function flash(c) {
+            gameView.style.background = c;
+            setTimeout(() => gameView.style.background = '', 150);
         }
 
         function showEnd() {
             const m = document.getElementById('modal');
-            document.getElementById('m-title').innerText = health > 0 ? "SUCCESS! 🎉" : "FAILED! 😵";
-            document.getElementById('m-text').innerText = health > 0 
-                ? "The protein folded perfectly into the lipid bilayer!" 
-                : "The protein misfolded and became unstable.";
+            document.getElementById('m-title').innerText = health > 0 ? "SUCCESS! 🎉" : "GAME OVER 😵";
+            document.getElementById('m-text').innerText = health > 0 ? "You successfully predicted the membrane sequence!" : "The protein failed to fold correctly.";
             m.style.display = 'flex';
         }
 
         node.addEventListener('mousedown', handleStart);
-        node.addEventListener('touchstart', handleStart, {passive: false});
-        window.addEventListener('mousemove', handleMove, {passive: false});
-        window.addEventListener('touchmove', handleMove, {passive: false});
+        node.addEventListener('touchstart', handleStart, {passive:false});
+        window.addEventListener('mousemove', handleMove, {passive:false});
+        window.addEventListener('touchmove', handleMove, {passive:false});
         window.addEventListener('mouseup', handleEnd);
         window.addEventListener('touchend', handleEnd);
     </script>
