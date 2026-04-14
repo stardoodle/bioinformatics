@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crystal Blitz | Science Edition</title>
+    <title>Crystal Blitz | Bio-World Responsive</title>
     <style>
         @import url('https://googleapis.com');
 
@@ -12,14 +12,43 @@
             --green: #4ade80; --dark: #000; --bg: #fffce8;
         }
 
-        * { box-sizing: border-box; user-select: none; margin: 0; }
-        body { font-family: 'Quicksand', sans-serif; background: var(--bg); display: flex; height: 100vh; overflow: hidden; }
+        * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--bg); 
+            display: flex; 
+            flex-direction: row; 
+            min-height: 100vh; 
+            overflow-x: hidden;
+        }
 
-        /* Left Sidebar: Controls & Manual */
-        .sidebar-left { width: 320px; background: white; border-right: 4px solid var(--dark); padding: 25px; display: flex; flex-direction: column; gap: 15px; }
+        /* --- Sidebar Shared Styles --- */
+        .sidebar { 
+            width: 320px; 
+            background: white; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .sidebar-left { border-right: 4px solid var(--dark); }
+        .sidebar-right { border-left: 4px solid var(--dark); }
+
+        h1 { font-family: 'Fredoka One', cursive; font-size: 1.8rem; text-align: center; }
+
+        /* --- Phase Chart --- */
+        .chart-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
 
         .chart {
-            width: 100%; height: 180px; background: #fff; border: 4px solid var(--dark);
+            width: 280px; height: 180px; background: #fff; border: 4px solid var(--dark);
             position: relative; border-radius: 20px; overflow: hidden;
             background-image: radial-gradient(#eee 1.5px, transparent 1.5px); background-size: 20px 20px;
         }
@@ -27,55 +56,89 @@
         .gold-zone { position: absolute; width: 55px; height: 55px; background: rgba(74, 222, 128, 0.2); border: 4px dashed var(--green); border-radius: 12px; }
         #tracker { position: absolute; width: 16px; height: 16px; background: var(--pink); border-radius: 50%; border: 3px solid var(--dark); z-index: 10; }
 
+        /* --- Controls --- */
         .control-panel { background: #f1f5f9; border: 3px solid var(--dark); padding: 15px; border-radius: 20px; box-shadow: 4px 4px 0 var(--dark); }
-        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--pink); }
+        .label-text { font-size: 0.7rem; font-weight: 900; margin-bottom: 5px; display: block; }
+        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--pink); height: 12px; }
 
-        /* Manual Box Style */
         .manual-card { background: var(--yellow); border: 3px solid var(--dark); padding: 12px; border-radius: 18px; box-shadow: 4px 4px 0 var(--dark); }
-        .manual-title { font-family: 'Fredoka One', cursive; font-size: 0.75rem; color: var(--dark); text-transform: uppercase; margin-bottom: 5px; display: block; }
-        .manual-text { font-size: 0.8rem; line-height: 1.3; color: var(--dark); font-weight: 700; }
+        .manual-text { font-size: 0.8rem; line-height: 1.3; font-weight: 700; }
 
-        /* Main Stage */
-        .stage { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 4px solid var(--dark); }
-        #drop { width: 240px; height: 240px; background: rgba(56, 189, 248, 0.1); border: 6px solid var(--dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        /* --- Main Stage --- */
+        .stage { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px;
+            background-image: radial-gradient(var(--blue) 1px, transparent 1px);
+            background-size: 40px 40px;
+            min-height: 400px;
+        }
+
+        #drop { width: 220px; height: 220px; background: rgba(255,255,255,0.8); border: 6px solid var(--dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 0 rgba(0,0,0,0.1); }
         #crystal { font-size: 5rem; transform: scale(0); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
-        /* Right Sidebar: Science Info */
-        .sidebar-right { width: 300px; background: white; padding: 25px; display: flex; flex-direction: column; gap: 20px; }
-        .info-card { background: #fdf2f8; border: 3px solid var(--dark); padding: 15px; border-radius: 20px; box-shadow: 4px 4px 0 var(--dark); }
-        .info-title { font-family: 'Fredoka One', cursive; font-size: 0.8rem; color: var(--pink); text-transform: uppercase; margin-bottom: 5px; display: block; }
-        .info-text { font-size: 0.85rem; line-height: 1.4; color: #475569; }
+        .pill-box { display: flex; gap: 10px; margin-bottom: 20px; z-index: 5; }
+        .pill { background: var(--dark); color: white; padding: 10px 20px; border-radius: 50px; font-family: 'Fredoka One'; font-size: 0.9rem; border: 3px solid #fff; box-shadow: 4px 4px 0 var(--dark); }
 
-        .pill-box { display: flex; gap: 10px; margin-bottom: 20px; }
-        .pill { background: var(--dark); color: white; padding: 10px 20px; border-radius: 50px; font-family: 'Fredoka One'; font-size: 0.8rem; border: 2px solid #fff; }
+        /* --- Science Info --- */
+        .info-card { background: white; border: 3px solid var(--dark); padding: 15px; border-radius: 20px; box-shadow: 4px 4px 0 var(--dark); margin-bottom: 10px; }
+        .info-title { font-family: 'Fredoka One', cursive; font-size: 0.75rem; color: var(--pink); text-transform: uppercase; margin-bottom: 5px; display: block; }
+        .info-text { font-size: 0.8rem; line-height: 1.4; color: #475569; font-weight: 700; }
+
+        /* --- Responsive Logic --- */
+        @media (max-width: 1100px) {
+            body { flex-direction: column; height: auto; overflow-y: auto; }
+            .sidebar { width: 100%; border: none; height: auto; box-shadow: none; }
+            .sidebar-left { border-bottom: 4px solid var(--dark); padding-bottom: 30px; }
+            .sidebar-right { border-top: 4px solid var(--dark); padding-top: 30px; }
+            .stage { border: none; min-height: 450px; }
+            .chart { width: 300px; }
+        }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 1.5rem; }
+            #drop { width: 180px; height: 180px; }
+            #crystal { font-size: 4rem; }
+            .pill { font-size: 0.7rem; padding: 8px 15px; }
+        }
+
+        #start-btn { 
+            background: var(--pink); border: 3px solid var(--dark); color: white; 
+            padding: 15px; border-radius: 15px; font-family: 'Fredoka One'; 
+            cursor: pointer; box-shadow: 4px 4px 0 var(--dark); font-size: 1.1rem;
+        }
+        #start-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--dark); }
+
     </style>
 </head>
 <body>
 
     <!-- LEFT: CONTROLS & MANUAL -->
-    <div class="sidebar-left">
-        <h1 style="font-family:'Fredoka One'; color:var(--blue); text-shadow:2px 2px 0 var(--dark);">CRYSTAL BLITZ</h1>
+    <div class="sidebar sidebar-left">
+        <h1 style="color:var(--blue); text-shadow:2px 2px 0 var(--dark);">CRYSTAL BLITZ</h1>
         
-        <div class="chart"><div class="gold-zone" id="target-zone"></div><div id="tracker"></div></div>
+        <div class="chart-container">
+            <div class="chart"><div class="gold-zone" id="target-zone"></div><div id="tracker"></div></div>
+        </div>
         
         <div class="control-panel">
-            <label style="font-size: 0.7rem; font-weight: 900;">PROTEIN</label>
+            <label class="label-text">🧪 PROTEIN</label>
             <input type="range" id="p-range" min="0" max="100" value="0">
             <div style="margin-top:10px;"></div>
-            <label style="font-size: 0.7rem; font-weight: 900;">SALT</label>
+            <label class="label-text">🧂 SALT</label>
             <input type="range" id="s-range" min="0" max="100" value="0">
         </div>
 
         <div class="manual-card">
-            <span class="manual-title">How to Play</span>
             <div class="manual-text">
-                1. 🕹️ Move <b>Sliders</b> to shift the Pink Dot.<br>
-                2. 🎯 Match dot with <b>Green Box</b>.<br>
-                3. ⏳ <b>Hold</b> for 1 sec to grow!
+                🕹️ Move dot to <b>Green Box</b> and <b>HOLD</b> for 1 sec!
             </div>
         </div>
 
-        <button onclick="startGame()" id="start-btn" style="background:var(--pink); border:3px solid var(--dark); color:white; padding:15px; border-radius:15px; font-family:'Fredoka One'; cursor:pointer; box-shadow:4px 4px 0 var(--dark); margin-top:5px;">START SHIFT ➔</button>
+        <button onclick="startGame()" id="start-btn">START SHIFT ➔</button>
     </div>
 
     <!-- CENTER: GAME AREA -->
@@ -88,17 +151,19 @@
     </div>
 
     <!-- RIGHT: SCIENCE -->
-    <div class="sidebar-right">
+    <div class="sidebar sidebar-right">
+        <h1 style="color:var(--pink); text-shadow:2px 2px 0 var(--dark); font-size: 1.4rem;">THE SCIENCE</h1>
         <div class="info-card">
-            <p class="info-text"><b>The Phase Diagram.</b> Growing a crystal is about reaching <b>Supersaturation</b> without crashing into precipitation.</p>
+            <span class="info-title">The Phase Diagram</span>
+            <p class="info-text">Unit I: Growing crystals is about reaching <b>Supersaturation</b> without precipitation.</p>
         </div>
         <div class="info-card" style="background:#e0f2fe">
-            <span class="info-title" style="color:var(--blue)">What it's for?</span>
-            <p class="info-text">It simulates the <b>Hanging Drop</b> method. Salt pulls water from protein until it packs into a crystal grid.</p>
+            <span class="info-title" style="color:var(--blue)">Hanging Drop</span>
+            <p class="info-text">Salt pulls water from protein until it packs into a solid crystal grid.</p>
         </div>
         <div class="info-card" style="background:#f0fdf4">
-            <span class="info-title" style="color:var(--green)">Why it's for?</span>
-            <p class="info-text">Ordered crystals are needed for <b>X-ray Diffraction</b>. Finding this "Sweet Spot" is the first step of structural biology.</p>
+            <span class="info-title" style="color:var(--green)">Why it Matters?</span>
+            <p class="info-text">We need ordered crystals for <b>X-ray Diffraction</b> to see protein atoms!</p>
         </div>
     </div>
 
@@ -114,40 +179,69 @@
         let score = 0, timeLeft = 60, gameActive = false, holdTime = 0;
 
         function moveTarget() {
-            zone.style.left = (20 + Math.random() * 200) + 'px';
-            zone.style.top = (20 + Math.random() * 100) + 'px';
+            // Adjust bounds based on chart size (280x180) minus zone size (55x55)
+            zone.style.left = (10 + Math.random() * 210) + 'px';
+            zone.style.top = (10 + Math.random() * 110) + 'px';
         }
 
         function startGame() {
-            gameActive = true; moveTarget();
+            if(gameActive) return;
+            gameActive = true; 
+            score = 0;
+            timeLeft = 60;
+            moveTarget();
             document.getElementById('start-btn').style.display = 'none';
-            setInterval(() => {
-                if(timeLeft > 0) timeLeft--;
+            
+            const countdown = setInterval(() => {
+                timeLeft--;
                 timerEl.innerText = timeLeft + "s";
-                if(timeLeft == 0) { alert("Time's up! You solved: " + score + " PDB Sets!"); location.reload(); }
+                if(timeLeft <= 0) { 
+                    clearInterval(countdown);
+                    gameActive = false;
+                    alert("Shift Over! You solved: " + score + " PDB Sets!"); 
+                    location.reload(); 
+                }
             }, 1000);
             update();
         }
 
         function update() {
             if(!gameActive) return;
-            const px = (pIn.value / 100) * 260, py = (1 - (sIn.value / 100)) * 160;
-            tracker.style.left = px + 'px'; tracker.style.top = py + 'px';
-            const t = tracker.getBoundingClientRect(), z = zone.getBoundingClientRect();
             
-            if (t.left > z.left && t.right < z.right && t.top > z.top && t.bottom < z.bottom) {
+            // Map 0-100 to chart pixels
+            const px = (pIn.value / 100) * (280 - 16); 
+            const py = (1 - (sIn.value / 100)) * (180 - 16);
+            
+            tracker.style.left = px + 'px'; 
+            tracker.style.top = py + 'px';
+            
+            const t = tracker.getBoundingClientRect();
+            const z = zone.getBoundingClientRect();
+            
+            const isInside = (t.left > z.left && t.right < z.right && t.top > z.top && t.bottom < z.bottom);
+
+            if (isInside) {
                 holdTime += 20;
-                if (holdTime > 1000) {
-                    score++; scoreEl.innerText = score + " SETS";
+                tracker.style.transform = "scale(1.3)";
+                if (holdTime > 800) { // 0.8 seconds hold
+                    score++; 
+                    scoreEl.innerText = score + " SETS";
                     crystal.style.transform = "scale(1.2)";
+                    
+                    // Success Flash
+                    document.body.style.background = "var(--green)";
                     setTimeout(() => { 
+                        document.body.style.background = "var(--bg)";
                         crystal.style.transform = "scale(0)"; 
                         moveTarget(); 
                         pIn.value = 0; sIn.value = 0;
                     }, 500);
                     holdTime = 0;
                 }
-            } else { holdTime = 0; }
+            } else { 
+                holdTime = 0; 
+                tracker.style.transform = "scale(1)";
+            }
             requestAnimationFrame(update);
         }
     </script>
