@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fold Architect | Bio-World</title>
+    <title>Fold Architect | Bio-World Responsive</title>
     <style>
         @import url('https://googleapis.com');
 
@@ -26,6 +26,7 @@
             color: var(--dark); 
             margin: 0; 
             display: flex; 
+            flex-direction: row;
             height: 100vh; 
             overflow: hidden;
         }
@@ -34,12 +35,13 @@
         .sidebar { 
             width: 300px; 
             background: white; 
-            padding: 25px; 
+            padding: 20px; 
             display: flex; 
             flex-direction: column; 
             gap: 15px; 
             z-index: 20;
             box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            overflow-y: auto;
         }
 
         .manual { border-right: 4px solid var(--dark); }
@@ -47,7 +49,7 @@
 
         h1, h2 { 
             font-family: 'Fredoka One', cursive; 
-            font-size: 1.6rem; 
+            font-size: 1.5rem; 
             color: var(--blue); 
             text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
             margin: 0;
@@ -73,7 +75,7 @@
         .step { font-size: 0.85rem; line-height: 1.4; font-weight: 700; }
 
         /* Game Area */
-        .main { flex: 1; display: flex; flex-direction: column; position: relative; }
+        .main { flex: 1; display: flex; flex-direction: column; position: relative; min-width: 0; }
         
         .workspace { 
             flex: 1.8; 
@@ -89,8 +91,9 @@
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            gap: 10px; 
+            gap: 5px; 
             position: relative; 
+            padding: 10px;
         }
 
         /* Interactive Shapes */
@@ -98,6 +101,7 @@
             position: absolute; cursor: pointer; display: flex; align-items: center; justify-content: center; 
             color: white; font-family: 'Fredoka One', cursive; font-size: 1.2rem;
             transition: transform 0.1s; filter: drop-shadow(3px 3px 0px var(--dark));
+            z-index: 5;
         }
 
         .p-helix { width: 50px; height: 50px; background: var(--helix); border-radius: 50%; border: 3px solid var(--dark); }
@@ -105,12 +109,12 @@
 
         /* Ribbon Shapes */
         .ribbon { 
-            height: 100px; border: 4px solid var(--dark);
+            height: 80px; border: 3px solid var(--dark);
             animation: foldIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
             box-shadow: 4px 4px 0px var(--dark);
         }
-        .r-helix { width: 50px; background: var(--helix); border-radius: 15px; }
-        .r-sheet { width: 80px; background: var(--sheet); clip-path: polygon(0% 30%, 65% 30%, 65% 0%, 100% 50%, 65% 100%, 65% 70%, 0% 70%); }
+        .r-helix { width: 40px; background: var(--helix); border-radius: 12px; }
+        .r-sheet { width: 60px; background: var(--sheet); clip-path: polygon(0% 30%, 65% 30%, 65% 0%, 100% 50%, 65% 100%, 65% 70%, 0% 70%); }
 
         /* Modal */
         #function-modal {
@@ -119,7 +123,7 @@
         }
         .modal-card { 
             background: white; padding: 25px; border: 5px solid var(--dark); border-radius: 25px; 
-            text-align: center; max-width: 350px; box-shadow: 8px 8px 0px var(--pink);
+            text-align: center; width: 90%; max-width: 350px; box-shadow: 8px 8px 0px var(--pink);
         }
         .btn-opt { 
             display: block; width: 100%; padding: 12px; margin: 8px 0; border: 3px solid var(--dark); 
@@ -137,6 +141,24 @@
         }
 
         @keyframes foldIn { from { transform: translateY(-40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 1100px) {
+            body { flex-direction: column; overflow-y: auto; height: auto; }
+            .sidebar { width: 100%; height: auto; border: none; }
+            .manual { border-bottom: 4px solid var(--dark); }
+            .concept-panel { border-top: 4px solid var(--dark); }
+            .main { height: 500px; border-bottom: 4px solid var(--dark); border-top: 4px solid var(--dark); }
+            .assembly-line { height: 150px; }
+        }
+
+        @media (max-width: 480px) {
+            .p-helix { width: 40px; height: 40px; }
+            .p-sheet { width: 50px; height: 30px; }
+            .ribbon { height: 60px; }
+            .r-sheet { width: 50px; }
+            h1 { font-size: 1.3rem; }
+        }
     </style>
 </head>
 <body>
@@ -153,12 +175,13 @@
         </div>
         <div class="guide-section">
             <span class="guide-title">How to Play</span>
-            <div class="step">1. Click units above.<br>2. Build the Rossmann Motif.<br>3. Assign its biological function!</div>
+            <div class="step">1. Click units in workspace.<br>2. Build the Rossmann Motif.<br>3. Pick the right bio-job!</div>
         </div>
         <div class="score-display">
             <div style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">Stability Score</div>
-            <div id="score" style="font-family:'Fredoka One'; font-size: 2rem;">0</div>
+            <div id="score" style="font-family:'Fredoka One'; font-size: 1.8rem;">0</div>
         </div>
+        <button onclick="location.reload()" style="padding:10px; border:3px solid var(--dark); background:var(--yellow); border-radius:15px; cursor:pointer; font-family:'Fredoka One'; box-shadow:3px 3px 0px var(--dark);">RESTART ↻</button>
     </div>
 
     <!-- CENTER: GAME -->
@@ -166,7 +189,7 @@
         <div id="function-modal">
             <div class="modal-card">
                 <h2 style="color:var(--blue)">Fold Complete!</h2>
-                <p style="font-weight:700; color:#475569; font-size:0.9rem; margin-bottom:15px;">Your Rossmann Fold is stable! What is its biological job?</p>
+                <p style="font-weight:700; color:#475569; font-size:0.85rem; margin-bottom:15px;">Your Rossmann Fold is stable! What is its biological job?</p>
                 <button class="btn-opt" onclick="assign('wrong')">Store Genetic Code</button>
                 <button class="btn-opt" onclick="assign('correct')">Bind NAD+ / Nucleotides</button>
                 <button class="btn-opt" onclick="assign('wrong')">Build Cell Walls</button>
@@ -176,19 +199,19 @@
         <div class="assembly-line" id="assembly"></div>
     </div>
 
-    <!-- RIGHT: SYLLABUS CONCEPT -->
+    <!-- RIGHT: CONCEPT -->
     <div class="sidebar concept-panel">
         <h2 style="color:var(--pink)">THE SCIENCE</h2>
         <div class="guide-section" style="background:var(--bg)">
-            <div class="step"><b>Super-Secondary Structure</b><br>These are specific groupings of secondary elements (helices/sheets) that form functional "Motifs."</div>
+            <div class="step"><b>Super-Secondary Structure</b><br>Grouping helices and sheets into functional "Motifs."</div>
         </div>
         <div class="guide-section">
             <span class="guide-title">The Rossmann Fold</span>
-            <div class="step">It uses an alternating <b>β-α-β-α-β</b> pattern. This creates a specific pocket designed to hold nucleotide cofactors.</div>
+            <div class="step">An alternating <b>β-α-β-α-β</b> pattern that creates a specific pocket for nucleotides.</div>
         </div>
         <div class="guide-section" style="background:#f0fdf4">
             <span class="guide-title" style="color:var(--green)">STRUCTURE & FUNCTION</span>
-            <div class="step">Structural bioinformatics predicts <b>Function from Structure</b>. If we see this motif, we know the protein is likely an enzyme!</div>
+            <div class="step">Structural bioinformatics predicts <b>Function</b>. This motif usually means the protein is an enzyme!</div>
         </div>
     </div>
 
@@ -210,8 +233,13 @@
             const el = document.createElement('div');
             el.className = `precursor p-${type}`;
             el.innerHTML = isHelix ? 'α' : 'β';
-            el.style.left = (Math.random() * (workspace.clientWidth - 80) + 40) + 'px';
-            el.style.top = (Math.random() * (workspace.clientHeight - 80) + 40) + 'px';
+            
+            // Boundary safety for mobile
+            const maxX = workspace.clientWidth - 70;
+            const maxY = workspace.clientHeight - 70;
+            el.style.left = (Math.random() * maxX + 20) + 'px';
+            el.style.top = (Math.random() * maxY + 20) + 'px';
+            
             el.onclick = () => fold(type);
             workspace.appendChild(el);
             setTimeout(() => { if(el.parentElement) el.remove(); }, 3000);
