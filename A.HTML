@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNA Code Catcher | Bio-World</title>
+    <style>
+        @import url('https://googleapis.com');
+
+        :root {
+            --yellow: #facc15;
+            --pink: #f472b6;
+            --blue: #38bdf8;
+            --green: #4ade80;
+            --dark: #000000;
+            --bg: #fffce8;
+        }
+
+        * { box-sizing: border-box; user-select: none; }
+        
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--bg); 
+            color: var(--dark); 
+            margin: 0; 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden;
+        }
+
+        /* Sidebars Shared Style */
+        .sidebar { 
+            width: 300px; 
+            background: white; 
+            padding: 25px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            z-index: 20; 
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+
+        .manual { border-right: 4px solid var(--dark); }
+        .concept { border-left: 4px solid var(--dark); }
+
+        h2, h3 { 
+            font-family: 'Fredoka One', cursive; 
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+            margin: 0;
+        }
+
+        .step-box {
+            background: #f1f5f9;
+            border: 3px solid var(--dark);
+            padding: 12px;
+            border-radius: 18px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            box-shadow: 4px 4px 0px var(--dark);
+            font-weight: 700;
+        }
+
+        /* Target Display */
+        #target-ui { 
+            font-family: 'Fredoka One', cursive; 
+            font-size: 2rem; 
+            color: var(--blue); 
+            background: white; 
+            padding: 15px; 
+            border: 4px solid var(--dark);
+            border-radius: 20px; 
+            text-align: center; 
+            box-shadow: 5px 5px 0px var(--dark);
+            letter-spacing: 2px;
+        }
+
+        /* Controls */
+        .control-box { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--pink); }
+        .btn-group { display: flex; gap: 8px; }
+
+        button { 
+            font-family: 'Fredoka One', cursive;
+            padding: 12px; 
+            border: 3px solid var(--dark); 
+            border-radius: 12px; 
+            cursor: pointer; 
+            transition: 0.1s; 
+            box-shadow: 3px 3px 0px var(--dark);
+        }
+        button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px var(--dark); }
+
+        .btn-stop { background: var(--yellow); }
+        .btn-bind { background: var(--green); }
+        #start-btn { background: var(--pink); color: white; width: 100%; }
+
+        /* Game Stage (Center) */
+        .view { 
+            flex: 1; 
+            position: relative; 
+            overflow: hidden; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background-image: radial-gradient(var(--blue) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        #strand { display: flex; gap: 15px; position: absolute; left: 100%; will-change: left; }
+
+        .base { 
+            width: 65px; height: 110px; border: 4px solid var(--dark);
+            border-radius: 18px; display: flex; align-items: center; justify-content: center; 
+            font-family: 'Fredoka One', cursive; font-size: 1.6rem; color: white; 
+            box-shadow: 5px 5px 0px var(--dark);
+        }
+
+        .A { background: #f87171; } .T { background: #60a5fa; } .G { background: #fbbf24; } .C { background: #4ade80; }
+
+        .binding-window { 
+            position: absolute; width: 320px; height: 160px; 
+            border: 6px dashed var(--pink); border-radius: 30px; 
+            pointer-events: none; z-index: 10; background: rgba(244, 114, 182, 0.1);
+        }
+
+        .score-box { 
+            position: absolute; top: 20px; right: 20px; background: white;
+            border: 4px solid var(--dark); padding: 8px 20px; border-radius: 50px;
+            font-family: 'Fredoka One', cursive; font-size: 1.2rem; box-shadow: 5px 5px 0px var(--dark);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LEFT: MANUAL -->
+    <div class="sidebar manual">
+        <h2 style="color:var(--pink)">HOW TO PLAY</h2>
+        <div id="target-ui">G-A-T-C</div>
+        <div class="step-box">1. ⚙️ Adjust <b>Speed</b> slider.</div>
+        <div class="step-box">2. 🛑 Hit <b>STOP</b> to freeze DNA.</div>
+        <div class="step-box">3. ⚡ Hit <b>BIND</b> to match!</div>
+        
+        <div class="control-box">
+            <input type="range" id="speed-slider" min="0" max="15" value="6">
+            <div class="btn-group">
+                <button class="btn-stop" id="stop-btn">STOP</button>
+                <button class="btn-bind" id="bind-btn">BIND</button>
+            </div>
+            <button id="start-btn">START ➔</button>
+        </div>
+    </div>
+
+    <!-- CENTER: GAME AREA -->
+    <div class="view">
+        <div class="score-box">⭐ <span id="score">0</span></div>
+        <div class="binding-window"></div>
+        <div id="strand"></div>
+    </div>
+
+    <!-- RIGHT: CONCEPT -->
+    <div class="sidebar concept">
+        <h2 style="color:var(--blue)">THE SCIENCE</h2>
+        <div class="step-box" style="background:var(--bg)">
+            <b>Direct Readout</b><br>
+            Proteins recognize DNA by "reading" the chemical signatures of bases inside the <b>Major Groove</b>.
+        </div>
+        <div class="step-box">
+            <h3 style="font-size:0.8rem; color:var(--pink)">WHAT IS IT?</h3>
+            Binding specificity! Just like your target code, proteins look for specific <b>Motifs</b> (sequences) to bind.
+        </div>
+        <div class="step-box" style="background:#f0fdf4">
+            <h3 style="font-size:0.8rem; color:var(--green)">WHY IT MATTERS?</h3>
+            Without this specific "Catching," proteins would bind to random DNA, and genes wouldn't turn on correctly!
+        </div>
+    </div>
+
+    <script>
+        const aminos = ['A', 'T', 'G', 'C'];
+        let target = "", score = 0, running = false, moving = false, pos = window.innerWidth, seq = [];
+        const strand = document.getElementById('strand'), slider = document.getElementById('speed-slider'), scoreEl = document.getElementById('score');
+
+        function setTarget() {
+            target = Array.from({length: 4}, () => aminos[Math.floor(Math.random() * 4)]).join('');
+            document.getElementById('target-ui').innerText = target.split('').join('-');
+        }
+
+        function createStrand() {
+            strand.innerHTML = ''; seq = [];
+            for(let i=0; i<200; i++) {
+                const b = aminos[Math.floor(Math.random() * 4)];
+                seq.push(b);
+                const d = document.createElement('div');
+                d.className = `base ${b}`; d.innerText = b;
+                strand.appendChild(d);
+            }
+        }
+
+        function update() {
+            if(running && moving) {
+                pos -= parseFloat(slider.value);
+                strand.style.left = pos + "px";
+                if(pos < -12000) pos = window.innerWidth;
+            }
+            requestAnimationFrame(update);
+        }
+
+        function checkBinding() {
+            if(!running) return;
+            const box = document.querySelector('.binding-window').getBoundingClientRect();
+            const bases = document.querySelectorAll('.base');
+            let found = "";
+            bases.forEach((b, i) => {
+                const r = b.getBoundingClientRect();
+                if(r.left > box.left - 15 && r.right < box.right + 15) found += seq[i];
+            });
+
+            if(found.includes(target)) {
+                score += 100; setTarget(); triggerFlash('var(--green)');
+            } else {
+                score = Math.max(0, score - 50); triggerFlash('#f87171');
+            }
+            scoreEl.innerText = score; moving = true; 
+        }
+
+        function triggerFlash(color) {
+            document.body.style.background = color;
+            setTimeout(() => { document.body.style.background = 'var(--bg)'; }, 200);
+        }
+
+        document.getElementById('start-btn').onclick = () => {
+            if(!running) {
+                running = true; moving = true;
+                createStrand(); setTarget(); update();
+                document.getElementById('start-btn').innerText = "SYSTEM ACTIVE";
+            }
+        };
+
+        document.getElementById('stop-btn').onclick = () => { moving = !moving; };
+        document.getElementById('bind-btn').onclick = checkBinding;
+
+        window.onkeydown = (e) => {
+            if(e.code === 'Space') checkBinding();
+            if(e.code === 'ShiftLeft') moving = !moving;
+        };
+    </script>
+</body>
+</html>

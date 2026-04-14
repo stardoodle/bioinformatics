@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Master | Bio-World</title>
+    <style>
+        @import url('https://googleapis.com');
+
+        :root {
+            --yellow: #facc15;
+            --pink: #f472b6;
+            --blue: #38bdf8;
+            --green: #4ade80;
+            --purple: #c084fc;
+            --dark: #000000;
+            --bg: #fffce8;
+            --nmr: #4ade80; 
+            --xray: #f472b6; 
+            --cryo: #38bdf8;
+        }
+
+        * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--bg); 
+            height: 100vh; 
+            display: flex; 
+            color: var(--dark);
+            overflow: hidden;
+        }
+
+        /* Shared Sidebar Style */
+        .sidebar { 
+            width: 320px; 
+            background: white; 
+            padding: 25px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            z-index: 100;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+
+        .left-sidebar { border-right: 4px solid var(--dark); }
+        .right-sidebar { border-left: 4px solid var(--dark); }
+
+        .header-title { 
+            font-family: 'Fredoka One', cursive; 
+            font-size: 1.8rem; 
+            color: var(--purple); 
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+            margin-bottom: 5px; 
+        }
+        
+        .logic-card { 
+            padding: 12px; 
+            border-radius: 20px; 
+            font-size: 0.8rem; 
+            background: #f1f5f9;
+            border: 3px solid var(--dark);
+            box-shadow: 4px 4px 0px var(--dark);
+            font-weight: 700;
+        }
+        .logic-card b { display: block; margin-bottom: 4px; font-size: 0.9rem; font-family: 'Fredoka One', cursive; }
+
+        /* Main Game Content */
+        .main-content { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            position: relative; 
+            background-image: radial-gradient(var(--blue) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .unit-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.2rem;
+            color: var(--dark);
+            text-transform: uppercase;
+            background: var(--yellow);
+            padding: 8px 20px;
+            border: 3px solid var(--dark);
+            border-radius: 50px;
+            box-shadow: 4px 4px 0px var(--dark);
+            margin-bottom: 20px;
+        }
+
+        .analyzer-display {
+            width: 380px;
+            background: #ffffff;
+            border-radius: 40px;
+            box-shadow: 10px 10px 0px var(--dark);
+            border: 5px solid var(--dark);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .scan-header {
+            background: var(--dark);
+            padding: 10px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 0.7rem;
+            color: var(--yellow);
+            letter-spacing: 2px;
+        }
+
+        .data-row { 
+            padding: 12px 25px; 
+            border-bottom: 3px solid var(--dark); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            background: white;
+        }
+        .data-label { font-size: 0.7rem; font-weight: 900; color: #94a3b8; }
+        .data-value { font-family: 'Fredoka One', cursive; font-size: 1.1rem; color: var(--dark); }
+
+        .visual-id { padding: 15px; font-size: 3.5rem; text-align: center; border-bottom: 3px solid var(--dark); }
+
+        .controls { margin-top: 30px; display: flex; gap: 12px; }
+        .btn { 
+            padding: 12px 20px; 
+            border: 3px solid var(--dark); 
+            border-radius: 15px; 
+            font-family: 'Fredoka One', cursive;
+            font-size: 0.9rem;
+            cursor: pointer; 
+            transition: 0.1s; 
+            box-shadow: 4px 4px 0px var(--dark);
+        }
+        .btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--dark); }
+        
+        .b-nmr { background: var(--nmr); }
+        .b-xray { background: var(--xray); }
+        .b-cryo { background: var(--cryo); }
+
+        .score-display { 
+            margin-top: auto; 
+            background: var(--dark); 
+            padding: 15px; 
+            border-radius: 20px; 
+            text-align: center; 
+            color: white;
+        }
+
+        .flash { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: 0.2s; z-index: 100; }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LEFT: MANUAL -->
+    <div class="sidebar left-sidebar">
+        <h1 class="header-title">LAB MASTER</h1>
+        <div class="logic-card">
+            <b style="color:var(--nmr)">NMR</b>
+            Small (< 50 kDa) & Liquid.
+        </div>
+        <div class="logic-card">
+            <b style="color:var(--xray)">X-RAY</b>
+            Ordered Crystal Lattices.
+        </div>
+        <div class="logic-card">
+            <b style="color:var(--cryo)">CRYO-EM</b>
+            Large (> 500 kDa) Machines.
+        </div>
+
+        <div class="score-display">
+            <div style="font-size: 0.6rem; font-weight: 800; color: var(--yellow);">SOLVED SHAPES</div>
+            <div id="score" style="font-family: 'Fredoka One', cursive; font-size: 2rem;">0</div>
+        </div>
+    </div>
+
+    <!-- CENTER: GAME AREA -->
+    <div class="main-content">
+        <div id="flash" class="flash"></div>
+        <h2 class="unit-title">Determination Methods</h2>
+
+        <div class="analyzer-display">
+            <div class="scan-header">BIO-SCANNER V.1</div>
+            <div class="visual-id" id="sample-id">🧬</div>
+            <div class="data-row">
+                <span class="data-label">WEIGHT</span>
+                <span class="data-value" id="val-mw">--</span>
+            </div>
+            <div class="data-row">
+                <span class="data-label">STATE</span>
+                <span class="data-value" id="val-state">--</span>
+            </div>
+            <div class="data-row" style="border:none;">
+                <span class="data-label">BENDY</span>
+                <span class="data-value" id="val-flex">--</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn b-nmr" onclick="solve('nmr')">NMR</button>
+            <button class="btn b-xray" onclick="solve('xray')">X-RAY</button>
+            <button class="btn b-cryo" onclick="solve('cryo')">CRYO-EM</button>
+        </div>
+    </div>
+
+    <!-- RIGHT: CONCEPT -->
+    <div class="sidebar right-sidebar">
+        <h2 class="header-title" style="color:var(--pink)">THE SCIENCE</h2>
+        <div class="logic-card" style="background:var(--bg)">
+            <b>Macromolecular Determination</b><br>
+            Bioinformaticians use different physics to "see" atoms.
+        </div>
+        <div class="logic-card">
+            <b style="color:var(--green)">NMR vs X-RAY</b><br>
+            NMR sees proteins moving in water. X-ray needs them frozen in a still crystal grid.
+        </div>
+        <div class="logic-card" style="background:#f0fdf4">
+            <b style="color:var(--blue)">CRYO-EM</b><br>
+            A new revolution! It uses electron beams to look at giant ribosomes and viruses.
+        </div>
+    </div>
+
+    <script>
+        const samples = [
+            { mw: "12 kDa", state: "Liquid", flex: "High", icon: "💧", method: "nmr" },
+            { mw: "300 kDa", state: "Crystal", flex: "Zero", icon: "💎", method: "xray" },
+            { mw: "1500 kDa", state: "Frozen", flex: "Low", icon: "❄️", method: "cryo" },
+            { mw: "45 kDa", state: "Liquid", flex: "Ultra", icon: "🧪", method: "nmr" },
+            { mw: "110 kDa", state: "Crystal", flex: "Zero", icon: "📦", method: "xray" },
+            { mw: "4200 kDa", state: "Complex", flex: "Med", icon: "🤖", method: "cryo" }
+        ];
+
+        let score = 0, currentIdx = 0;
+
+        function update() {
+            const s = samples[currentIdx];
+            document.getElementById('val-mw').innerText = s.mw;
+            document.getElementById('val-state').innerText = s.state;
+            document.getElementById('val-flex').innerText = s.flex;
+            document.getElementById('sample-id').innerText = s.icon;
+        }
+
+        function solve(choice) {
+            const flash = document.getElementById('flash');
+            if (choice === samples[currentIdx].method) {
+                score += 100;
+                flash.style.background = "rgba(74, 222, 128, 0.4)";
+            } else {
+                score = Math.max(0, score - 50);
+                flash.style.background = "rgba(248, 113, 113, 0.4)";
+            }
+            flash.style.opacity = 1;
+            setTimeout(() => { flash.style.opacity = 0; }, 200);
+            document.getElementById('score').innerText = score;
+            currentIdx = Math.floor(Math.random() * samples.length);
+            update();
+        }
+        update();
+    </script>
+</body>
+</html>
